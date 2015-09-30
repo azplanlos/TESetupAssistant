@@ -98,6 +98,8 @@
 - (void)insertNextAssistant:(TEBaseAssistant *)assistant;
 - (void)setObject:(id)obj forKey:(id)key; // these manipulate the sessionDict
 - (id)objectForKey:(id)key;
+- (void)runAssistant:(TEBaseAssistant*)assistant lastStep:(BOOL)lastStep;
+
 
 // Accessors
 - (NSWindow *)window;

@@ -47,7 +47,6 @@
 @end
 
 @interface TESetupAssistant (Private)
-- (void)runAssistant:(TEBaseAssistant*)assistant lastStep:(BOOL)lastStep;
 - (void)insertAssistant:(TEBaseAssistant*)assistant atIndex:(NSUInteger)index;
 @end
 @implementation TESetupAssistant
