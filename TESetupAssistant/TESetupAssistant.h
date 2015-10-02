@@ -66,10 +66,11 @@
 	IBOutlet NSBox *assistantBox;
 	IBOutlet NSTextField *stepTitle;
 	IBOutlet NSView *specialView;
-	
 	NSMutableArray *assistants;
 	NSMutableDictionary *sessionDict; // used by assistants to share data
 	int currentAssistant;
+    BOOL moveForward;
+    BOOL firstAssistant;
 }
 
 + (TESetupAssistant *)assistant;

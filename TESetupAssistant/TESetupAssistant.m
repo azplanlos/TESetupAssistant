@@ -24,6 +24,7 @@
 #import "TESetupAssistant.h"
 #import "NSBundle+TEAdditions.h"
 #import "Common.h"
+#import <QuartzCore/QuartzCore.h>
 
 @interface TEBaseAssistant (Private)
 - (void)setParentController:(TESetupAssistant*)aController;
@@ -66,6 +67,12 @@
 - (void)awakeFromNib
 {
 	[window setDelegate:self];
+    [assistantBox.contentView setWantsLayer:YES];
+    NSView* xcontent = [[NSView alloc] initWithFrame:assistantBox.bounds];
+    [xcontent setIdentifier:@"xcontent"];
+    [assistantBox setContentView:xcontent];
+    [assistantBox.contentView addSubview:[[NSView alloc] initWithFrame:assistantBox.bounds]];
+    firstAssistant = YES;
 }
 
 - (id)init
@@ -183,7 +190,7 @@
 {
 	TEBaseAssistant *assistant = [assistants objectAtIndex:currentAssistant];
 	[[NSNotificationCenter defaultCenter] postNotificationName:TEAssistantDidFinishNotification object:assistant];
-	
+	moveForward = YES;
 	if ( ++currentAssistant == [assistants count] ) {
 		log_debug("all assistants finished");
 		[self reset];
@@ -197,7 +204,7 @@
 - (void)runPreviousAssistant
 {
 	BOOL lastStep = NO; // if this is first assistant tell it to start over from the beginning
-	
+	moveForward = NO;
 	if ( currentAssistant > 0 ) {
 		currentAssistant--;
 		lastStep = YES;
@@ -272,6 +279,21 @@ ACC_RETURN_M(NSMutableDictionary *, sessionDict)
 
 
 @implementation TESetupAssistant (Private)
+
+- (CATransition *)slideAnimation {
+    CATransition *transition = [CATransition animation];
+    [transition setType:kCATransitionPush];
+    [transition setSubtype:kCATransitionFromRight];
+    return transition;
+}
+
+- (CATransition *)slideBackAnimation {
+    CATransition *transition = [CATransition animation];
+    [transition setType:kCATransitionPush];
+    [transition setSubtype:kCATransitionFromLeft];
+    return transition;
+}
+
 - (void)runAssistant:(TEBaseAssistant*)assistant lastStep:(BOOL)lastStep
 {
 	NSDisableScreenUpdates();
@@ -285,8 +307,18 @@ ACC_RETURN_M(NSMutableDictionary *, sessionDict)
 	[nextButton setAction:@selector(nextPressed:)];
 	[prevButton setEnabled:(currentAssistant != 0)];
 	[nextButton setEnabled:YES];
-	
-	[assistantBox setContentView:[assistant view]];
+    if (currentAssistant != 0 || !firstAssistant) {
+        NSView* xc = assistantBox.contentView;
+        if (moveForward) xc.animations = @{@"subviews":self.slideAnimation}; else xc.animations = @{@"subviews":self.slideBackAnimation};
+        [[assistantBox.contentView animator] replaceSubview:[[assistantBox.contentView subviews] objectAtIndex:0] with:assistant.view];
+    } else {
+        NSView* xc = [[NSView alloc] initWithFrame:assistant.view.frame];
+        [xc addSubview:assistant.view];
+        [xc setWantsLayer:YES];
+        xc.animations = @{@"subviews":self.slideAnimation};
+        [assistantBox setContentView:xc];
+        firstAssistant = NO;
+    }
 	[window makeFirstResponder:[assistant view]];
     [nextButton setNextKeyView:[assistant view]];
 	[self selectStep:[[assistant orderedSteps] objectAtIndex:0]];
