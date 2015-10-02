@@ -108,6 +108,7 @@
 - (NSView *)specialView;
 - (NSBox *)assistantBox;
 - (NSArray *)assistants;
+ACC_RETURN_H(NSMutableDictionary*, sessionDict);
 - (TEBaseAssistant *)prevAssistant;
 - (TEBaseAssistant *)nextAssistant;
 - (TEBaseAssistant *)currAssistant;

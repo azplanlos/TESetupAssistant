@@ -145,7 +145,6 @@
 	[window close];
 	if ( modal ) [NSApp stopModal];
 	[assistants removeAllObjects];
-	[sessionDict removeAllObjects];
 	[installStepView clearSteps];
 	[assistantBox setContentView:nil];
 }
@@ -268,6 +267,7 @@ ACC_RETURN_M(NSButton *, nextButton)
 ACC_RETURN_M(NSView   *, specialView)
 ACC_RETURN_M(NSBox    *, assistantBox)
 ACC_RETURN_M(NSArray  *, assistants)
+ACC_RETURN_M(NSMutableDictionary *, sessionDict)
 @end
 
 
